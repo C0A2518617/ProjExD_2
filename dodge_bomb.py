@@ -27,11 +27,23 @@ def check_bound(obj_rct: pg.Rect) -> tuple[bool, bool]:
     return yoko, tate
 
 def calc_orientation(org: pg.Rect, dst: pg.Rect, current_xy: tuple[float, float]):
+    """
+    引数:爆弾/こうかとんのrectと現在のxyを入れる
+    戻り値:爆弾のベクトル(vx,vyのtuple)
+    距離が300以下ならcurrent_xyに移動させ、そうでなければsqrt(50)に正規化した値を返す
+    """
     a = dst[0] - org[0] #xの差
     b = dst[1] - org[1] #yの差
-    c = math.sqrt(a**2 + b**2)
-    c = c / math.sqrt(50)
-    return a/c , b/c
+    c = (a**2 + b**2)
+    if math.sqrt(c) > 300:
+        c = math.sqrt(c) / math.sqrt(50)
+        a = a/c
+        b = b/c
+    else:
+        #print("NA")
+        a = current_xy[0]
+        b = current_xy[1]
+    return a,b
 
 def main():
     pg.display.set_caption("逃げろ！こうかとん")
@@ -77,7 +89,7 @@ def main():
             #kk_rct[0] = x_latest
         #はみだし修正部/ball
         bb_rct_chk = check_bound(bb_rct)
-        targeting = calc_orientation(bb_rct,kk_rct,kk_rct.center)
+        targeting = calc_orientation(bb_rct,kk_rct,(vx,vy))
         vx = targeting[0]; vy = targeting[1]
         if not bb_rct_chk[0]:
             vx *= -1
