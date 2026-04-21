@@ -1,5 +1,6 @@
 import os
 import sys
+import random
 import pygame as pg
 
 
@@ -12,6 +13,18 @@ DELTA = {
         "pg.K_RIGHT": (+5, 0)
         }
 
+def check_bound(obj_rct: pg.Rect) -> tuple[bool, bool]:
+    """
+    引数：こうかとんRectかばくだんRect
+    戻り値：タプル（横方向判定結果，縦方向判定結果）
+    画面内ならTrue，画面外ならFalse
+    """
+    yoko, tate = True, True
+    if obj_rct.left < 0 or WIDTH < obj_rct.right: # 横方向判定
+        yoko = False
+    if obj_rct.top < 0 or HEIGHT < obj_rct.bottom: # 縦方向判定
+        tate = False
+    return yoko, tate
 
 def main():
     pg.display.set_caption("逃げろ！こうかとん")
@@ -24,9 +37,11 @@ def main():
     pg.draw.circle(bb_img,(255,0,0),(10,10),10)
     bb_img.set_colorkey((0,0,0))
     bb_rct = bb_img.get_rect()
-    bb_rct.center = 10,10
+    bb_rct.center = random.randint(0,WIDTH),random.randint(0,HEIGHT)
     clock = pg.time.Clock()
     tmr = 0
+    vx=5;x_latest=0
+    vy=5;y_latest=0
     while True:
         for event in pg.event.get():
             if event.type == pg.QUIT: 
@@ -39,12 +54,34 @@ def main():
                 dict_mv = DELTA["pg.K_" + pg.key.name(k).upper()]
                 sum_mv[0] += dict_mv[0]
                 sum_mv[1] += dict_mv[1]
+        #はみだし修正部/koukaton
+        if kk_rct.top+sum_mv[1] < 0:
+            sum_mv[1] = 0
+            #print(kk_rct[1])
+            #kk_rct[1] = y_latest
+        if kk_rct.bottom+sum_mv[1] > HEIGHT:
+            sum_mv[1] = 0
+            #kk_rct[1] = y_latest
+        if kk_rct.left+sum_mv[0] < 0:
+            sum_mv[0] = 0
+            #kk_rct[0] = x_latest
+        if kk_rct.right+sum_mv[0] > WIDTH:
+            sum_mv[0] = 0
+            #kk_rct[0] = x_latest
+        #はみだし修正部/ball
+        bb_rct_chk = check_bound(bb_rct)
+        if not bb_rct_chk[0]:
+            vx *= -1
+        if not bb_rct_chk[1]:
+            vy *= -1
         kk_rct.move_ip(sum_mv)
-        bb_rct.move_ip(5,5)
+        bb_rct.move_ip(vx,vy)
         screen.blit(kk_img, kk_rct)
         screen.blit(bb_img,bb_rct)
         pg.display.update()
         tmr += 1
+        x_latest = kk_rct[0]
+        y_latest = kk_rct[1]
         clock.tick(50)
 
 if __name__ == "__main__":
