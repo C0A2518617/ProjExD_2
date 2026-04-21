@@ -40,8 +40,8 @@ def main():
     bb_rct.center = random.randint(0,WIDTH),random.randint(0,HEIGHT)
     clock = pg.time.Clock()
     tmr = 0
-    vx=5;x_latest=0
-    vy=5;y_latest=0
+    vx=5
+    vy=5
     while True:
         for event in pg.event.get():
             if event.type == pg.QUIT: 
@@ -78,11 +78,12 @@ def main():
         bb_rct.move_ip(vx,vy)
         screen.blit(kk_img, kk_rct)
         screen.blit(bb_img,bb_rct)
+        if kk_rct.colliderect(bb_rct):
+            return 0
         pg.display.update()
         tmr += 1
-        x_latest = kk_rct[0]
-        y_latest = kk_rct[1]
         clock.tick(50)
+
 
 if __name__ == "__main__":
     pg.init()
