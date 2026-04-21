@@ -5,6 +5,7 @@ import pygame as pg
 
 WIDTH, HEIGHT = 1100, 650
 os.chdir(os.path.dirname(os.path.abspath(__file__)))
+DELTA = {"pg.K_UP": (0, -5), "pg.K_DOWN": (0, +5), "pg.K_LEFT": (-5, 0), "pg.K_RIGHT": (+5, 0)}
 
 
 def main():
@@ -21,23 +22,18 @@ def main():
             if event.type == pg.QUIT: 
                 return
         screen.blit(bg_img, [0, 0]) 
-
         key_lst = pg.key.get_pressed()
         sum_mv = [0, 0]
-        if key_lst[pg.K_UP]:
-            sum_mv[1] -= 5
-        if key_lst[pg.K_DOWN]:
-            sum_mv[1] += 5
-        if key_lst[pg.K_LEFT]:
-            sum_mv[0] -= 5
-        if key_lst[pg.K_RIGHT]:
-            sum_mv[0] += 5
+        for k in [pg.K_DOWN, pg.K_LEFT, pg.K_RIGHT, pg.K_UP]:
+            if key_lst[k]:
+                dict_mv = DELTA["pg.K_" + pg.key.name(k).upper()]
+                sum_mv[0] += dict_mv[0]
+                sum_mv[1] += dict_mv[1]
         kk_rct.move_ip(sum_mv)
         screen.blit(kk_img, kk_rct)
         pg.display.update()
         tmr += 1
         clock.tick(50)
-
 
 if __name__ == "__main__":
     pg.init()
