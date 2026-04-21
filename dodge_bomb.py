@@ -2,7 +2,7 @@ import os
 import sys
 import random
 import pygame as pg
-
+import math
 
 WIDTH, HEIGHT = 1100, 650
 os.chdir(os.path.dirname(os.path.abspath(__file__)))
@@ -15,7 +15,7 @@ DELTA = {
 
 def check_bound(obj_rct: pg.Rect) -> tuple[bool, bool]:
     """
-    引数：こうかとんRectかばくだんRect
+    引数：何かしらのRect
     戻り値：タプル（横方向判定結果，縦方向判定結果）
     画面内ならTrue，画面外ならFalse
     """
@@ -25,6 +25,13 @@ def check_bound(obj_rct: pg.Rect) -> tuple[bool, bool]:
     if obj_rct.top < 0 or HEIGHT < obj_rct.bottom: # 縦方向判定
         tate = False
     return yoko, tate
+
+def calc_orientation(org: pg.Rect, dst: pg.Rect, current_xy: tuple[float, float]):
+    a = dst[0] - org[0] #xの差
+    b = dst[1] - org[1] #yの差
+    c = math.sqrt(a**2 + b**2)
+    c = c / math.sqrt(50)
+    return a/c , b/c
 
 def main():
     pg.display.set_caption("逃げろ！こうかとん")
@@ -70,6 +77,8 @@ def main():
             #kk_rct[0] = x_latest
         #はみだし修正部/ball
         bb_rct_chk = check_bound(bb_rct)
+        targeting = calc_orientation(bb_rct,kk_rct,kk_rct.center)
+        vx = targeting[0]; vy = targeting[1]
         if not bb_rct_chk[0]:
             vx *= -1
         if not bb_rct_chk[1]:
