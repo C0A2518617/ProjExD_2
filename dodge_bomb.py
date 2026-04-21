@@ -4,6 +4,7 @@ import random
 import pygame as pg
 import math
 
+
 WIDTH, HEIGHT = 1100, 650
 os.chdir(os.path.dirname(os.path.abspath(__file__)))
 DELTA = {
@@ -12,6 +13,7 @@ DELTA = {
         "pg.K_LEFT": (-5, 0),
         "pg.K_RIGHT": (+5, 0)
         }
+
 
 def check_bound(obj_rct: pg.Rect) -> tuple[bool, bool]:
     """
@@ -25,6 +27,7 @@ def check_bound(obj_rct: pg.Rect) -> tuple[bool, bool]:
     if obj_rct.top < 0 or HEIGHT < obj_rct.bottom: # 縦方向判定
         tate = False
     return yoko, tate
+
 
 def calc_orientation(org: pg.Rect, dst: pg.Rect, current_xy: tuple[float, float]):
     """
@@ -44,6 +47,7 @@ def calc_orientation(org: pg.Rect, dst: pg.Rect, current_xy: tuple[float, float]
         a = current_xy[0]
         b = current_xy[1]
     return a,b
+
 
 def main():
     pg.display.set_caption("逃げろ！こうかとん")
