@@ -7,7 +7,7 @@ import math
 
 WIDTH, HEIGHT = 1100, 650
 os.chdir(os.path.dirname(os.path.abspath(__file__)))
-DELTA = {
+DELTA = { #キーと移動量の辞書
         "pg.K_UP": (0, -5),
         "pg.K_DOWN": (0, +5),
         "pg.K_LEFT": (-5, 0),
@@ -35,18 +35,18 @@ def calc_orientation(org: pg.Rect, dst: pg.Rect, current_xy: tuple[float, float]
     戻り値:爆弾のベクトル(vx,vyのtuple)
     距離が300以下ならcurrent_xyに移動させ、そうでなければsqrt(50)に正規化した値を返す
     """
-    a = dst[0] - org[0] #xの差
-    b = dst[1] - org[1] #yの差
-    c = (a**2 + b**2)
-    if math.sqrt(c) > 300:
+    a: float = dst[0] - org[0] #xの差
+    b: float = dst[1] - org[1] #yの差
+    c: float = (a**2 + b**2)
+    if math.sqrt(c) > 300: #距離が300以上なら
         c = math.sqrt(c) / math.sqrt(50)
         a = a/c
         b = b/c
-    else:
+    else: #距離が300以下なら
         #print("NA")
         a = current_xy[0]
         b = current_xy[1]
-    return a,b
+    return a,b 
 
 
 def main():
@@ -73,7 +73,7 @@ def main():
         key_lst = pg.key.get_pressed()
         sum_mv = [0, 0]
         for k in [pg.K_DOWN, pg.K_LEFT, pg.K_RIGHT, pg.K_UP]:
-            if key_lst[k]:
+            if key_lst[k]: #もしそのキーが押されていたら
                 dict_mv = DELTA["pg.K_" + pg.key.name(k).upper()]
                 sum_mv[0] += dict_mv[0]
                 sum_mv[1] += dict_mv[1]
@@ -95,19 +95,19 @@ def main():
         bb_rct_chk = check_bound(bb_rct)
         targeting = calc_orientation(bb_rct,kk_rct,(vx,vy))
         vx = targeting[0]; vy = targeting[1]
-        if not bb_rct_chk[0]:
+        if not bb_rct_chk[0]: #横方向にはみ出していたら
             vx *= -1
-        if not bb_rct_chk[1]:
+        if not bb_rct_chk[1]: #縦方向にはみ出していたら
             vy *= -1
         kk_rct.move_ip(sum_mv)
         bb_rct.move_ip(vx,vy)
         screen.blit(kk_img, kk_rct)
         screen.blit(bb_img,bb_rct)
-        if kk_rct.colliderect(bb_rct):
+        if kk_rct.colliderect(bb_rct): #こうかとんと爆弾が重なったら
             return 0
         pg.display.update()
         tmr += 1
-        clock.tick(50)
+        clock.tick(50) #フレームレートを50に設定
 
 
 if __name__ == "__main__":
